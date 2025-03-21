@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Application de gestion des elections</title>
+    <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
+    <h:outputStylesheet library="assets" name="css/layout.css"/>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css"/>
+</h:head>
+<h:body>
+    <ui:include src="navbar.xhtml"/>
+    <div>
+        <ui:insert name="content">
+            <div class="flex flex-column justify-content-center align-items-center">
+                <p class="p-2 mt-5">Bonjour sur votre session</p>
+
+            </div>
+        </ui:insert>
+    </div>
+</h:body>
+</html>

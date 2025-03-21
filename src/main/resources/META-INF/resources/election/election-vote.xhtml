@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="../home.xhtml">
+    <ui:define name="content">
+
+        <div class="px-4 py-8 md:px-6 lg:px-8">
+            <div class="flex align-items-center justify-content-center">
+                <div class="surface-card p-4 shadow-2 border-round w-full lg:w-3 md:w-7">
+                    <div class="text-center mb-5">
+                        <div class="text-900 text-3xl font-medium mb-3">Votez maintenant</div>
+                    </div>
+                    <div>
+                        <h:form id="vote">
+                            <p:growl id="messages" showDetail="true"/>
+                            <p:outputPanel id="manage-election-content">
+                                <div class="flex flex-column gap-2  mb-2">
+
+                                </div>
+                                <div class="flex flex-column gap-2  mb-2">
+                                    <p:outputLabel for="candidat" styleClass="font-bold">Candidat</p:outputLabel>
+                                    <p:autoComplete
+                                            id="candidat"
+                                            value="#{resultatView.resultatEntity.candidat}"
+                                            placeholder="Rechercher un candidat"
+                                            var="candidat"
+                                            dropdown="true"
+                                            inputStyle="width: 250px;"
+                                            required="true"
+                                            styleClass="ui-fluid"
+                                            minLength="100"
+                                            forceSelection="true"
+                                            size="10"
+                                            itemLabel="#{candidat.nom.concat(' ').concat(candidat.prenom)}"
+                                            converter="#{candidatConverter}"
+                                            itemValue="#{candidat}"
+                                            emptyMessage="Aucun bureau retrouvé"
+                                            completeMethod="#{resultatView.completeCandidat}">
+                                        <p:ajax event="itemSelect" update="mouvement"/>
+                                    </p:autoComplete>
+                                </div>
+
+                                <div class="flex flex-column gap-2 mb-2">
+                                    <p:outputLabel value="Mouvement politique" for="mouvement"/>
+                                    <p:inputText id="mouvement"
+                                                 disabled="true"
+                                                 value="#{resultatView.resultatEntity.candidat.mouvementEntity.designation}"/>
+                                </div>
+
+                                <div class="flex flex-column gap-2  mb-2">
+                                    <p:outputLabel for="bureau" styleClass="font-bold">Bureau de vote</p:outputLabel>
+                                    <p:autoComplete
+                                            id="bureau"
+                                            value="#{resultatView.resultatEntity.bureau}"
+                                            placeholder="Rechercher un bureau"
+                                            var="bureau"
+                                            dropdown="true"
+                                            inputStyle="width: 250px;"
+                                            styleClass="ui-fluid"
+                                            minLength="100"
+                                            forceSelection="true"
+                                            size="10"
+                                            required="true"
+                                            itemLabel="#{bureau.nom.concat(' - ').concat(bureau.localiteEntity.designation)}"
+                                            converter="#{bureauConverter}"
+                                            itemValue="#{bureau}"
+                                            emptyMessage="Aucun bureau retrouvé"
+                                            completeMethod="#{agentView.completeBureau}"/>
+                                </div>
+                            </p:outputPanel>
+                            <p:commandButton value="Voter"
+                                             icon="pi pi-check"
+                                             update="manage-election-content,messages"
+                                             styleClass="mt-2 w-full"
+                                             actionListener="#{resultatView.enregistrerVote()}"/>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Test application</title>
+    <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
+    <h:outputStylesheet library="assets" name="css/layout.css"/>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css"/>
+</h:head>
+<body>
+
+    <div class="">
+        <div class="px-4 py-8 md:px-6 lg:px-8">
+            <div class="flex align-items-center justify-content-center">
+                <div class="flex flex-column bg-white p-8 rounded-lg shadow-2">
+                    <h2 class="text-2xl font-semibold text-center mb-6 text-gray-700">Connexion</h2>
+                    <h:form prependId="false">
+                        <div class="mb-4">
+                            <p:inputText id="username"
+                                         placeholder="Nom d'utilisateur"
+                                         styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </p:inputText>
+                        </div>
+
+                        <div class="mb-6">
+                            <p:password id="password"
+                                        placeholder="Mot de passe"
+                                        styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </p:password>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-2">
+                            <p:commandButton id="submit" value="connexion" ajax="false"
+                                             styleClass="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 focus:outline-none">
+                            </p:commandButton>
+                            <a href="${pageContext.request.contextPath}/create-account.xhtml"
+                               class="text-sm text-indigo-500 hover:text-indigo-700">Créer un compte</a>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

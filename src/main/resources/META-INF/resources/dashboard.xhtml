@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces"
+      xmlns:faces="jakarta.faces"
+      xmlns:f="jakarta.faces.core"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+
+    <style>
+        .legacy .ui-panel, .legacy.div.ui-state-hover {
+            margin: 10px;
+        }
+        .legacy .ui-dashboard-column {
+            width: 220px;
+        }
+        .ui-dashboard-active {
+            border-color: var(- -primary-color);
+            border-width: 3px !important;
+            border-style: dashed;
+        }
+        .ui-dashboard-hover {
+            border-color: #C2E085;
+            border-width: 3px !important;
+            border-style: solid;
+        }
+        body .ui-panel.chart-dashlet .ui-panel-content .ui-chart {
+            height: 250px;
+            max-height: 250px;
+        }
+    </style>
+</h:head>
+<ui:composition template="home.xhtml">
+    <ui:define name="content">
+        <div class="layout-wrapper mt-5 py-1">
+            <div class="grid p-4">
+                <div class="flex flex-column w-full">
+                    <p:breadCrumb styleClass="mb-2">
+                        <p:menuitem value="Menu"
+                                    url="/dashboard.xhtml"/>
+                    </p:breadCrumb>
+
+                    <h5 class="mt-0">Dossiers de demandes</h5>
+                    <div class="flex flex-row gap-2">
+                        <p:panel id="sports1" styleClass="col-3"
+                                 header="Demande en cours de validation"
+                                 footer="Nombre de dossiers : #{debtRequestView.getDebtRequestsByInitialize().size()}">
+                            <p:commandButton value="Traiter"
+                                             actionListener="#{debtRequestView.debtRequestPage()}"
+                                             icon="pi pi-fw pi-cog"/>
+                        </p:panel>
+
+
+                        <p:panel id="sports3" styleClass="col-3"
+                                 header="Demande en attente"
+                                 footer="Nombre de dossiers : #{debtRequestView.getAllDebtRequestsByStatusPending().size()}">
+                            <p:commandButton value="Traiter"
+                                             actionListener="#{debtRequestView.debtRequestPending()}"
+                                             icon="pi pi-fw pi-cog"/>
+                        </p:panel>
+                        <p:panel id="sports2" styleClass="col-3"
+                                 header="Demandes rejettés"
+                                 footer="Nombre de dossiers : #{debtRequestView.getAllDebtRequestsByStatusRejected().size()}">
+                            <p:commandButton value="Traiter"
+                                             actionListener="#{debtRequestView.debtRequestRejected()}"
+                                             icon="pi pi-fw pi-cog"/>
+                        </p:panel>
+
+                        <p:panel id="sports4" styleClass="col-3"
+                                 header="Demandes acceptés"
+                                 footer="Nombre de dossiers : #{debtRequestView.getDebtRequestsByInitialize().size()}">
+                            <p:commandButton value="Traiter" icon="pi pi-fw pi-cog"/>
+                        </p:panel>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

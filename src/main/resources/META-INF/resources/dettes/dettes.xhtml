@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="../home.xhtml">
+    <ui:define name="content">
+
+        <div class="layout-wrapper mt-5 py-1">
+            <div class="grid p-4">
+                <div class="col-12">
+
+                    <p:growl id="messages" showDetail="true"/>
+                    <p:breadCrumb styleClass="mb-2">
+                        <p:menuitem value="Menu"
+                                    url="/dashboard.xhtml"/>
+                        <p:menuitem value="BANNETTE DES DOSSIERS EN TRAITEMENT"
+                                    url="/dettes/dettes.xhtml"/>
+                    </p:breadCrumb>
+                    <h:form id="form">
+                        <p:toolbar>
+                            <f:facet name="left">
+                                <h:outputText value="Date de transfert : entre " styleClass="mr-2"/>
+                                <p:datePicker
+                                        id="dateTransfert1"
+                                        value="#{debtRequestView.dateTransfert1}"
+                                        mask="true"
+                                        pattern="dd/MM/yyyy"
+                                        required="true"
+                                        showIcon="true"
+                                        showOnFocus="false"
+                                        maxdate="#{debtRequestView.getCurrentDate()}"
+                                        label="Date de transfert">
+                                    <p:ajax event="dateSelect"
+                                            update="dateTransfert2,annuler-verficationTransfertService-button,filtrer-dossierFaitCommis-button"/>
+                                    <p:ajax event="change"
+                                            update="dateTransfert2,annuler-verficationTransfertService-button,filtrer-dossierFaitCommis-button"/>
+                                    <p:ajax event="blur"
+                                            update="dateTransfert2,annuler-verficationTransfertService-button,filtrer-dossierFaitCommis-button"/>
+                                </p:datePicker>
+                                <h:outputText value=" et " styleClass=" ml-2 mr-2"/>
+                                <p:datePicker
+                                        id="dateTransfert2"
+                                        value="#{debtRequestView.dateTransfert2}"
+                                        mask="true"
+                                        disabled="#{debtRequestView.hashDateTransfert2()}"
+                                        mindate="#{debtRequestView.dateTransfert1}"
+                                        pattern="dd/MM/yyyy"
+                                        showIcon="true"
+                                        showOnFocus="false"
+                                        maxdate="#{debtRequestView.getCurrentDate()}"
+                                        label="Date de transfert">
+                                </p:datePicker>
+                            </f:facet>
+                            <f:facet name="right">
+                                <p:commandButton value="Filtrer"
+                                                 id="filtrer-dossierFaitCommis-button"
+                                                 styleClass="mr-2"
+                                                 actionListener="#{debtRequestView.filterDebtRequest()}"
+                                                 disabled="#{debtRequestView.hashDateTransfert2()}"
+                                                 update="messages,dateTransfert1,dateTransfert2,dt-transfererService, @this,dtDebtRequest,form"
+                                                 icon="pi pi-fw pi-check-circle">
+                                </p:commandButton>
+                                <p:commandButton value="Annuler"
+                                                 styleClass="ui-button-danger"
+                                                 id="annuler-verficationTransfertService-button"
+                                                 actionListener="#{debtRequestView.getDebtRequestsByCurrent()}"
+                                                 disabled="#{debtRequestView.hashDateTransfert2()}"
+                                                 update="messages,dateTransfert1,dateTransfert2,dt-transfererService,dtDebtRequest"
+                                                 icon="pi pi-fw pi-times">
+                                </p:commandButton>
+                            </f:facet>
+                        </p:toolbar>
+                        <p:dataTable id="dt-debtRequest"
+                                     widgetVar="dtDebtRequest"
+                                     var="debtRequest"
+                                     value="#{debtRequestView.debtRequests}"
+                                     reflow="true"
+                                     stripedRows="true"
+                                     styleClass="products-table"
+                                     selection="#{debtRequestView.selectedDebtRequests}"
+                                     rowKey="#{debtRequest.id}"
+                                     paginator="true"
+                                     rows="10"
+                                     selectionMode="single"
+                                     size="small"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     rowsPerPageTemplate="5,10,15"
+                                     selectionRowMode="add">
+                            <f:facet name="header">
+                                <div class="flex justify-content-between products-table-header">
+                                    <span style="font-weight: bold" class="text-2xl">#{debtRequestView.debtRequests.size()} dossier(s)</span>
+                                    <span class=" filter-container ui-input-icon-left">
+                                        <i class="pi pi-search"/>
+                                        <p:inputText id="globalFilter" onkeyup="PF('dtDebtRequest').filter()"
+                                                     placeholder="Rechercher une demande" />
+                                    </span>
+                                </div>
+                            </f:facet>
+
+                            <p:ajax event="rowSelect"/>
+                            <p:ajax event="rowUnselect"/>
+                            <p:ajax event="rowSelectCheckbox"/>
+                            <p:ajax event="rowUnselectCheckbox"/>
+                            <p:ajax event="toggleSelect"/>
+
+                            <p:column headerText="Nom(s) et prenom(s)"
+                                      sortBy="#{debtRequest.customer.firstName.concat(' ').concat(debtRequest.customer.lastName)}"
+                                      filterBy="#{debtRequest.customer.firstName.concat(' ').concat(debtRequest.customer.lastName)}">
+                                <h:outputText value="#{debtRequest.customer.firstName.concat(' ').concat(debtRequest.customer.lastName)}" />
+                            </p:column>
+                            <p:column headerText="Date de la demande" sortBy="#{debtRequest.dateRequest}" filterBy="#{debtRequest.dateRequest}">
+                                <h:outputText value="#{debtRequest.dateRequest}" />
+                            </p:column>
+                            <p:column headerText="Montant demandé" sortBy="#{debtRequest.amountRequest}"
+                                      filterBy="#{debtRequest.amountRequest}">
+                                <h:outputText value="#{debtRequest.amountRequest}" />
+                            </p:column>
+                            <p:column headerText="Statut" sortBy="#{debtRequest.status}"
+                                      filterBy="#{debtRequest.status}">
+                                <p:badge value="#{debtRequest.status.name.toUpperCase()}"
+                                         severity="success" styleClass="mr-2"/>
+                            </p:column>
+
+                            <p:column exportable="false" ariaHeaderText="Actions" >
+                                <p:commandButton icon="pi pi-pencil"
+                                                 update=":dialogs:manage-debtRequest-content"
+                                                 rendered="#{debtRequestView.rendered}"
+                                                 oncomplete="PF('manageDebtRequestDialog').show()"
+                                                 styleClass="edit-button mr-1 rounded-button ui-button-success"
+                                                 process="@this">
+                                    <f:setPropertyActionListener
+                                            value="#{debtRequest}"
+                                            target="#{debtRequestView.debtRequest}" />
+                                    <p:resetInput target=":dialogs:manage-debtRequest-content" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-warning rounded-button"
+                                                 icon="pi pi-check"
+                                                 process="@this"
+                                                 rendered="#{debtRequestView.rendered}"
+                                                 oncomplete="PF('manageValidateDebtRequestDialog').show()">
+                                    <f:setPropertyActionListener
+                                            value="#{debtRequest}"
+                                            target="#{debtRequestView.debtRequest}" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+
+                    <h:form id="dialogs">
+                        <p:messages id="messagesDialogs" showDetail="true"/>
+
+                        <p:confirmDialog widgetVar="manageDebtRequestDialog"
+                                         showEffect="fade"
+                                         width="400"
+                                         id="manage-debtRequest-content"
+                                         message="Voulez-vous commencer le traitement de ce dossier ?"
+                                         header="Confirmer"
+                                         severity="warn">
+                            <p:commandButton value="Oui"
+                                             icon="pi pi-check"
+                                             actionListener="#{debtRequestView.editDebtRequest(debtRequestView.debtRequest)}"
+                                             process="@this"
+                                             update=":form"
+                                             oncomplete="PF('deleteCustomerDialog').hide()" />
+                            <p:commandButton value="Non"
+                                             type="button"
+                                             styleClass="ui-button-secondary"
+                                             icon="pi pi-times"
+                                             onclick="PF('manageDebtRequestDialog').hide()" />
+                        </p:confirmDialog>
+
+                        <p:confirmDialog widgetVar="accountCustomerDialog"
+                                         showEffect="fade"
+                                         width="400"
+                                         message="Voulez-vous afficher les informations de ce dossier ?"
+                                         header="Confirmer"
+                                         severity="warn">
+                            <p:commandButton value="Oui"
+                                             icon="pi pi-check"
+                                             actionListener="#{customerView.getCustomerAccount(customerView.customer)}"
+                                             process="@this"
+                                             update=":form"
+                                             oncomplete="PF('deleteCustomerDialog').hide()" />
+                            <p:commandButton value="Non"
+                                             type="button"
+                                             styleClass="ui-button-secondary"
+                                             icon="pi pi-times"
+                                             onclick="PF('deleteCustomerDialog').hide()" />
+                        </p:confirmDialog>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

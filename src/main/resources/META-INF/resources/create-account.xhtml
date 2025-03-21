@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="jakarta.faces.html"
+      xmlns:p="primefaces">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Test application</title>
+    <h:outputStylesheet library="webjars" name="primeflex/3.3.1/primeflex.min.css"/>
+    <h:outputStylesheet library="assets" name="css/layout.css"/>
+    <h:outputStylesheet library="primefaces-saga" name="theme.css"/>
+</h:head>
+<h:body>
+    <div class="">
+        <div class="px-4 py-8 md:px-6 lg:px-8">
+            <div class="flex align-items-center justify-content-center">
+                <div class="flex flex-column bg-white p-8 rounded-lg shadow-2">
+                    <h2 class="text-2xl font-semibold text-center mb-6 text-gray-700">Créer un compte</h2>
+                    <h:form styleClass="w-full" id="form-create-account">
+                        <p:growl id="messages" life="5000" showDetail="true" showSummary="true"/>
+                        <p:outputPanel id="manage-account-content">
+                            <div class="mb-2">
+                                <p:inputText placeholder="Nom"
+                                             required="true"
+                                             label="Nom"
+                                             value="#{createAccountView.user.firstName}"
+                                             id="firstname"
+                                             requiredMessage="Ce champ est obligatoire"
+                                             styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </p:inputText>
+                            </div>
+
+                            <div class="mb-2">
+                                <p:inputText placeholder="Prénom"
+                                             required="false"
+                                             label="Prénom"
+                                             id="lastname"
+                                             value="#{createAccountView.user.lastName}"
+                                             styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </p:inputText>
+                            </div>
+
+                            <div class="flex flex-row gap-2 mb-2">
+                                <p:inputText placeholder="Email"
+                                             required="true"
+                                             label="Email"
+                                             id="email"
+                                             value="#{createAccountView.user.email}"
+                                             requiredMessage="Ce champ est obligatoire"
+                                             styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </p:inputText>
+
+                                <p:inputText placeholder="Nom d'utilisateur"
+                                             maxlength="12"
+                                             id="username"
+                                             required="true"
+                                             label="Nom d'utilisateur"
+                                             value="#{createAccountView.user.username}"
+                                             requiredMessage="Ce champ est obligatoire"
+                                             styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </p:inputText>
+                            </div>
+
+                            <div class="mb-2">
+                                <p:password
+                                        id="password"
+                                        placeholder="Mot de passe"
+                                        label="Mot de passe"
+                                        value="#{createAccountView.user.password}"
+                                        requiredMessage="Ce champ est obligatoire"
+                                        styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </p:password>
+                            </div>
+
+                            <div class="mb-2">
+                                <p:password
+                                        id="confirmPassword"
+                                        placeholder="Confirmer le mot de passe"
+                                        label="Confirmation de mot de passe"
+                                        requiredMessage="Ce champ est obligatoire"
+                                        value="#{createAccountView.confirmPassword}"
+                                        styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                </p:password>
+                            </div>
+                        </p:outputPanel>
+                        <div class="flex items-center justify-between gap-2">
+                            <p:commandButton value="Créer un compte"
+                                             update="manage-account-content,messages"
+                                             action="#{createAccountView.createUserAccount()}"
+                                             styleClass="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 focus:outline-none">
+                            </p:commandButton>
+                            <a href="${pageContext.request.contextPath}/login.xhtml"
+                               class="text-sm text-indigo-500 hover:text-indigo-700">Me connecter</a>
+                        </div>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</h:body>
+</html>

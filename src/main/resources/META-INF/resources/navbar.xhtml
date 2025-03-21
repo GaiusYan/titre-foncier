@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions"
+      xmlns:sec="https://joinfaces.org/security">
+
+<h:body>
+    <div class="card">
+        <h:form>
+            <p:menubar>
+                <f:facet name="start">
+                    <p:graphicImage name="images/logo.png" height="40" styleClass="mr-2"/>
+                    <span class="app-name">Ban-King</span>
+                </f:facet>
+
+                <p:submenu label="Gestion clientèles" icon="pi pi-home">
+                    <p:menuitem value="Clients" icon="pi pi-chart-bar" url="/clients/client.xhtml"/>
+                    <p:menuitem value="Demandes de dettes"
+                                icon="pi pi-dollar"
+                                url="/dettes/dette.xhtml"/>
+                </p:submenu>
+
+                <p:submenu label="Pages" icon="pi pi-file">
+                    <p:menuitem value="Empty Page" icon="pi pi-file-o" url="#"/>
+                    <p:menuitem value="Login" icon="pi pi-sign-in" url="#"/>
+                    <p:menuitem value="Error" icon="pi pi-exclamation-triangle" url="#"/>
+                    <p:menuitem value="404" icon="pi pi-times" url="#"/>
+                    <p:menuitem value="Access Denied" icon="pi pi-lock" url="#"/>
+                </p:submenu>
+
+                <p:submenu label="Hierarchy" icon="pi pi-align-left">
+                    <p:submenu label="Submenu 1" icon="pi pi-align-left">
+                        <p:menuitem value="Submenu 1.1" icon="pi pi-align-left" url="#"/>
+                        <p:menuitem value="Submenu 1.2" icon="pi pi-align-left" url="#"/>
+                    </p:submenu>
+                    <p:submenu label="Submenu 2" icon="pi pi-align-left">
+                        <p:menuitem value="Submenu 2.1" icon="pi pi-align-left" url="#"/>
+                        <p:menuitem value="Submenu 2.2" icon="pi pi-align-left" url="#"/>
+                    </p:submenu>
+                </p:submenu>
+
+                <f:facet name="options">
+                    <p:inputText placeholder="Search" style="margin-right: .5rem"/>
+                    <p:button value="Deconnexion"
+                              href="/logout"
+                              icon="pi pi-fw pi-sign-out"
+                              styleClass="ui-button-info"/>
+                </f:facet>
+            </p:menubar>
+        </h:form>
+    </div>
+</h:body>
+</html>

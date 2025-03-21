@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Gestion des utilisateurs</title>
+    <style>
+        .label {
+            width: 20%;
+            padding: 4px;
+        }
+
+        .value {
+            width: 80%;
+            padding: 4px;
+        }
+
+        .grid {
+            width: 100%;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .outputLabel {
+            font-weight: bold;
+        }
+
+        .grid {
+            width: 33%;
+            padding: 4px;
+        }
+        .ui-wizard-step-titles{
+            font-size: 12px;
+        }
+        .wide-autocomplete {
+            width: 400px !important;
+        }
+
+    </style>
+</h:head>
+<ui:composition template="home.xhtml">
+
+    <ui:define name="content">
+        <div class="layout-wrapper mt-5 py-1">
+            <div class="grid p-4">
+                <div class="col-12">
+                    <div class="flex flex-column gap-1">
+                        <div class="flex align-items-center gap-2">
+
+                            <div class="card crud-demo">
+                                <h:form id="form">
+                                    <p:growl id="messages" showDetail="true" />
+                                    <p:toolbar>
+                                        <p:toolbarGroup>
+                                            <p:commandButton value="Nouveau" icon="pi pi-plus" actionListener="#{nationaliteView.nouveau()}"
+                                                             update=":dialogs:manage-nationalite-content" oncomplete="PF('manageNationaliteDialog').show()"
+                                                             styleClass="ui-button-primary" style="margin-right: .5rem">
+                                                <p:resetInput target=":dialogs:manage-nationalite-content" />
+                                            </p:commandButton>
+                                            <p:commandButton id="delete-nationalites-button" value="#{nationaliteView.deleteButtonMessage}"
+                                                             icon="pi pi-trash" actionListener="#{nationaliteView.deleteSelectedNationalites()}"
+                                                             styleClass="ui-button-danger" disabled="#{!nationaliteView.hasSelectedNationaliteDto()}" update="@this">
+                                                <p:confirm header="Confirmation" message="Delete the selected products?"
+                                                           icon="pi pi-exclamation-triangle" />
+                                            </p:commandButton>
+                                        </p:toolbarGroup>
+                                        <p:toolbarGroup align="right">
+                                            <p:commandButton value="Export" icon="pi pi-upload" styleClass="ui-button-help" ajax="false">
+                                                <p:dataExporter type="pdf" target="dt-nationalites" fileName="products" />
+                                            </p:commandButton>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+
+                                    <!-- La table des données           -->
+                                    <p:dataTable id="dt-nationalites"
+                                                 widgetVar="dtNationalites"
+                                                 var="dtoNat"
+                                                 value="#{nationaliteView.allNationaliteDtos}"
+                                                 reflow="true" styleClass="products-table" selection="#{nationaliteView.selectedNationaliteDtos}"
+                                                 rowKey="#{dtoNat.natCode}" paginator="true" rows="10" selectionRowMode="add" paginatorPosition="bottom">
+                                        <f:facet name="header">
+                                            <div class="products-table-header">
+                                                <span style="font-weight: bold">LISTE DE NATIONALITE</span>
+                                                <span class="filter-container ui-input-icon-right"> <i class="pi pi-search"></i>
+                                                    <p:inputText id="globalFilter" onkeyup="PF('dtNationalites').filter()" placeholder="Search" />
+                                                </span>
+                                            </div>
+                                        </f:facet>
+
+                                        <p:ajax event="rowSelect" update=":form:delete-nationalites-button" />
+                                        <p:ajax event="rowUnselect" update=":form:delete-nationalites-button" />
+                                        <p:ajax event="rowSelectCheckbox" update=":form:delete-nationalites-button" />
+                                        <p:ajax event="rowUnselectCheckbox" update=":form:delete-nationalites-button" />
+                                        <p:ajax event="toggleSelect" update=":form:delete-nationalites-button" />
+
+                                        <p:column selectionMode="multiple" exportable="false"></p:column>
+
+                                        <p:column headerText="Code" sortBy="#{dtoNat.natCode}" filterBy="#{dtoNat.natCode}">
+                                            <h:outputText value="#{dtoNat.natCode}" />
+                                        </p:column>
+                                        <p:column headerText="Libélle" sortBy="#{dtoNat.natLib}" filterBy="#{dtoNat.natLib}">
+                                            <h:outputText value="#{dtoNat.natLib}" />
+                                        </p:column>
+                                        <p:column headerText="Création par" sortBy="#{dtoNat.natCreerpar}">
+                                            <h:outputText value="#{dtoNat.natCreerpar}" readonly="true" />
+                                        </p:column>
+                                        <p:column headerText="Date crée" sortBy="#{dtoNat.natDatecreer}">
+                                            <h:outputText  value="#{dtoNat.natDatecreer}" readonly="true" />
+                                        </p:column>
+
+                                        <p:column exportable="false" ariaHeaderText="Actions">
+                                            <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-nationalite-content"
+                                                             oncomplete="PF('manageNationaliteDialog').show()"
+                                                             styleClass="edit-button rounded-button ui-button-success" process="@this">
+                                                <f:setPropertyActionListener value="#{dtoNat}" target="#{nationaliteView.nationaliteDto}" />
+                                                <p:resetInput target=":dialogs:manage-nationalite-content" />
+                                            </p:commandButton>
+                                            <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+                                                             process="@this"
+                                                             oncomplete="PF('deleteNationaliteDialog').show()">
+                                                <f:setPropertyActionListener value="#{dtoNat}" target="#{nationaliteView.nationaliteDto}" />
+                                            </p:commandButton>
+                                        </p:column>
+
+                                    </p:dataTable>
+                                </h:form>
+
+
+                                <!-- Le modale du details nationalite           -->
+                                <h:form id="dialogs">
+                                    <p:dialog header="Nationalite Details" showEffect="fade" modal="true" widgetVar="manageNationaliteDialog"
+                                              responsive="true">
+                                        <p:outputPanel id="manage-nationalite-content" class="ui-fluid">
+                                            <p:outputPanel>
+
+                                                <div class="field">
+                                                    <p:outputLabel for="natLib">LIBELLE</p:outputLabel>
+                                                    <p:inputText id="natLib" value="#{nationaliteView.nationaliteDto.natLib}" required="true" requiredMessage="Le libellé est obligatoire" />
+                                                </div>
+
+                                            </p:outputPanel>
+                                        </p:outputPanel>
+
+                                        <f:facet name="footer">
+                                            <p:commandButton value="Enregistrer" icon="pi pi-check" actionListener="#{nationaliteView.saveNationalite}"
+                                                             update="manage-nationalite-content" process="manage-nationalite-content @this" />
+                                            <p:commandButton value="Annuler" icon="pi pi-times" onclick="PF('manageNationaliteDialog').hide()"
+                                                             class="ui-button-secondary" type="button" />
+                                        </f:facet>
+                                    </p:dialog>
+
+
+                                    <!-- Le modale confirmation de suppression           -->
+                                    <p:confirmDialog widgetVar="deleteNationaliteDialog" showEffect="fade" width="300"
+                                                     message="Voulez-vous vraiment supprimer ?" header="Confirm" severity="warn">
+                                        <p:commandButton value="Oui" icon="pi pi-check" actionListener="#{nationaliteView.deleteNationalite}"
+                                                         update="manage-nationalite-content" process="manage-nationalite-content @this"
+                                                         oncomplete="PF('deleteNationaliteDialog').hide()" />
+                                        <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                                         onclick="PF('deleteNationaliteDialog').hide()" />
+                                    </p:confirmDialog>
+
+                                    <!-- Le modale de confirmation          -->
+                                    <p:confirmDialog global="true" showEffect="fade" width="300">
+                                        <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                                        <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                                         icon="pi pi-times" />
+                                    </p:confirmDialog>
+
+                                </h:form>
+
+                            </div>
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+
+</ui:composition>
+</html>

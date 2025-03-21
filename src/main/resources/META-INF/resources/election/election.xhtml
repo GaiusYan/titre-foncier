@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="../home.xhtml">
+    <ui:define name="content">
+        <div class="layout-wrapper mt-5 py-1">
+            <div class="grid p-4">
+                <div class="col-12">
+
+
+                    <h:form id="form">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:toolbar>
+                            <f:facet name="left">
+
+                                <p:commandButton value="Nouveau"
+                                                 action="#{mouvementView.ajouterMouvement()}"
+                                                 icon="pi pi-fw pi-plus"
+                                                 update=":dialogs:manage-mouvement-content"
+                                                 oncomplete="PF('manageMouvementDialog').show()"
+                                                 styleClass="ui-button-success">
+                                    <p:resetInput target=":dialogs:manage-mouvement-content"/>
+                                </p:commandButton>
+                            </f:facet>
+                        </p:toolbar>
+                        <p:dataTable id="dt-mouvement"
+                                     widgetVar="dtMouvement"
+                                     var="region"
+                                     value="#{mouvementView.listeMouvements()}"
+                                     reflow="true"
+                                     styleClass="products-table"
+                                     selection="#{mouvementView.selectedMouvementEntities}"
+                                     rowKey="#{region.regCode}"
+                                     paginator="true"
+                                     rows="10"
+                                     selectionRowMode="add">
+                            <f:facet name="header">
+                                <div class="flex justify-content-between products-table-header">
+                                    <span style="font-weight: bold">REGION</span>
+                                    <span class=" filter-container ui-input-icon-left">
+                                        <i class="pi pi-search"/>
+                                        <p:inputText id="globalFilter" onkeyup="PF('dtRegion').filter()" placeholder="Rechercher une region" />
+                                    </span>
+                                </div>
+                            </f:facet>
+
+                            <p:ajax event="rowSelect"/>
+                            <p:ajax event="rowUnselect"/>
+                            <p:ajax event="rowSelectCheckbox"/>
+                            <p:ajax event="rowUnselectCheckbox"/>
+                            <p:ajax event="toggleSelect"/>
+
+                            <p:column selectionMode="multiple" exportable="false"/>
+                            <p:column headerText="Code" sortBy="#{region.regCode}" filterBy="#{region.regCode}">
+                                <h:outputText value="#{region.regCode}" />
+                            </p:column>
+                            <p:column headerText="Libelle" sortBy="#{region.regLib}" filterBy="#{region.regLib}">
+                                <h:outputText value="#{region.regLib}" />
+                            </p:column>
+                            <p:column exportable="false" ariaHeaderText="Actions">
+                                <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-region-content"
+                                                 oncomplete="PF('manageRegionDialog').show()"
+                                                 styleClass="edit-button rounded-button ui-button-success" process="@this">
+                                    <f:setPropertyActionListener value="#{region}" target="#{regionView.regionEntity}" />
+                                    <p:resetInput target=":dialogs:manage-region-content" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+                                                 process="@this"
+                                                 oncomplete="PF('deleteRegionDialog').show()">
+                                    <f:setPropertyActionListener value="#{region}" target="#{regionView.regionEntity}" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+
+                    <h:form id="dialogs">
+                        <p:dialog header="Région"
+                                  showEffect="fade"
+                                  modal="true"
+                                  responsive="true"
+                                  widgetVar="manageRegionDialog">
+                            <p:outputPanel id="manage-region-content">
+                                <div class="field">
+                                    <p:outputLabel for="libelle">Région</p:outputLabel>
+                                    <p:inputText id="libelle"
+                                                 style="width: 250px"
+                                                 value="#{regionView.regionEntity.regLib}"
+                                                 required="true" />
+                                </div>
+                            </p:outputPanel>
+                            <f:facet name="footer">
+                                <p:commandButton value="Enregistrer"
+                                                 icon="pi pi-check"
+                                                 update="manage-region-content, :form:messages, :form:dtRegion"
+                                                 process="manage-region-content @this"
+                                                 actionListener="#{regionView.enregistrerRegion()}"/>
+                                <p:commandButton value="Annuler"
+                                                 icon="pi pi-times"
+                                                 onclick="PF('manageRegionDialog').hide()"
+                                                 class="ui-button-secondary"
+                                                 type="button" />
+                            </f:facet>
+                        </p:dialog>
+
+                        <p:confirmDialog widgetVar="deleteRegionDialog"
+                                         showEffect="fade"
+                                         width="300"
+                                         message="Voulez-vous supprimer ce produit?"
+                                         header="Confirmer"
+                                         severity="warn">
+                            <p:commandButton value="Yes"
+                                             icon="pi pi-check"
+                                             actionListener="#{regionView.supprimerRegion()}"
+                                             process="@this"
+                                             update=":form"
+                                             oncomplete="PF('deleteRegionDialog').hide()" />
+                            <p:commandButton value="No"
+                                             type="button"
+                                             styleClass="ui-button-secondary"
+                                             icon="pi pi-times"
+                                             onclick="PF('deleteRegionDialog').hide()" />
+                        </p:confirmDialog>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

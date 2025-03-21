@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="../home.xhtml">
+    <ui:define name="content">
+
+        <div class="layout-wrapper mt-5 py-1">
+            <div class="grid p-4">
+                <div class="col-12">
+
+
+                    <h:form id="form">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:breadCrumb styleClass="mb-2">
+                            <p:menuitem value="Menu"
+                                        url="/dashboard.xhtml"/>
+                            <p:menuitem value="CLIENTS"
+                                        url="/clients/client.xhtml"/>
+                        </p:breadCrumb>
+                        <p:toolbar>
+
+                            <f:facet name="left">
+                                <p:commandButton value="Créer un client"
+                                                 action="#{customerView.newCustomer()}"
+                                                 icon="pi pi-fw pi-folder-open"
+                                                 update=":dialogs:manage-customer-content"
+                                                 oncomplete="PF('manageCustomerDialog').show()"
+                                                 styleClass="ui-button-success">
+                                    <p:resetInput target=":dialogs:manage-customer-content"/>
+                                </p:commandButton>
+                            </f:facet>
+                        </p:toolbar>
+                        <p:dataTable id="dt-customer"
+                                     widgetVar="dtCustomer"
+                                     var="customer"
+                                     value="#{customerView.getAllCustomers()}"
+                                     reflow="true"
+                                     stripedRows="true"
+                                     styleClass="products-table"
+                                     selection="#{customerView.customers}"
+                                     rowKey="#{customer.id}"
+                                     paginator="true"
+                                     rows="10"
+                                     selectionMode="single"
+                                     size="small"
+                                     selectionRowMode="add">
+                            <f:facet name="header">
+                                <div class="flex justify-content-between products-table-header">
+                                    <span style="font-weight: bold" class="text-2xl">Clients</span>
+                                    <span class=" filter-container ui-input-icon-left">
+                                        <i class="pi pi-search"/>
+                                        <p:inputText id="globalFilter" onkeyup="PF('dtCustomer').filter()"
+                                                     placeholder="Rechercher un client" />
+                                    </span>
+                                </div>
+                            </f:facet>
+
+                            <p:ajax event="rowSelect"/>
+                            <p:ajax event="rowUnselect"/>
+                            <p:ajax event="rowSelectCheckbox"/>
+                            <p:ajax event="rowUnselectCheckbox"/>
+                            <p:ajax event="toggleSelect"/>
+
+                            <p:column headerText="Nom(s) et prenom(s)"
+                                      sortBy="#{customer.firstName.concat(' ').concat(customer.lastName)}"
+                                      filterBy="#{customer.firstName.concat(' ').concat(customer.lastName)}">
+                                <h:outputText value="#{customer.firstName.concat(' ').concat(customer.lastName)}" />
+                            </p:column>
+                            <p:column headerText="Téléphone" sortBy="#{customer.tel}" filterBy="#{customer.tel}">
+                                <h:outputText value="#{customer.tel}" />
+                            </p:column>
+                            <p:column headerText="Adresse" sortBy="#{customer.address}" filterBy="#{customer.address}">
+                                <h:outputText value="#{customer.address}" />
+                            </p:column>
+                            <p:column headerText="Email" sortBy="#{customer.email}" filterBy="#{customer.email}">
+                                <h:outputText value="#{customer.email}" />
+                            </p:column>
+
+                            <p:column exportable="false" ariaHeaderText="Actions">
+                                <p:commandButton icon="pi pi-pencil"
+                                                 update=":dialogs:manage-customer-content"
+                                                 oncomplete="PF('manageCustomerDialog').show()"
+                                                 styleClass="edit-button mr-1 rounded-button ui-button-success"
+                                                 process="@this">
+                                    <f:setPropertyActionListener
+                                            value="#{customer}"
+                                            target="#{customerView.customer}" />
+                                    <p:resetInput target=":dialogs:manage-customer-content" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-primary mr-1 rounded-button"
+                                                 icon="pi pi-dollar"
+                                                 process="@this"
+                                                 oncomplete="PF('accountCustomerDialog').show()">
+                                    <f:setPropertyActionListener
+                                            value="#{customer}"
+                                            target="#{customerView.customer}" />
+                                </p:commandButton>
+                                <p:commandButton class="ui-button-warning rounded-button"
+                                                 icon="pi pi-trash"
+                                                 process="@this"
+                                                 oncomplete="PF('deleteCustomerDialog').show()">
+                                    <f:setPropertyActionListener
+                                            value="#{customer}"
+                                            target="#{customerView.customer}" />
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+
+                    <h:form id="dialogs">
+                        <p:messages id="messagesDialogs" showDetail="true"/>
+                        <p:dialog header="Enregistrer un client"
+                                  showEffect="fade"
+                                  modal="true"
+                                  width="600"
+                                  responsive="true"
+                                  widgetVar="manageCustomerDialog">
+                            <p:divider/>
+                            <p:outputPanel id="manage-customer-content">
+                                <div class="flex sm:flex-column md:flex-row col-12 md:gap-2">
+                                    <div class="md:col-6 sm:col-12">
+                                        <div class="flex flex-column gap-2  mb-2">
+                                            <p:outputLabel for="firstname"
+                                                           styleClass="font-bold">Nom</p:outputLabel>
+                                            <p:inputText id="firstname"
+                                                         label="Nom"
+                                                         value="#{customerView.customer.firstName}"
+                                                         required="true"/>
+                                        </div>
+                                        <div class="flex flex-column gap-2  mb-2">
+                                            <p:outputLabel for="lastname" styleClass="font-bold">Prénom</p:outputLabel>
+                                            <p:inputText id="lastname"
+                                                         label="Prénom"
+                                                         value="#{customerView.customer.lastName}"
+                                                         required="false" />
+                                        </div>
+                                        <div class="flex flex-column gap-2  mb-2">
+                                            <p:outputLabel for="email" styleClass="font-bold">Email</p:outputLabel>
+                                            <p:inputText id="email"
+                                                         label="Profession"
+                                                         value="#{customerView.customer.email}"
+                                                         required="true" />
+                                        </div>
+                                    </div>
+                                <div class="md:col-6 sm:col-12">
+                                    <div class="flex flex-column gap-2  mb-2">
+                                        <p:outputLabel for="adress" styleClass="font-bold">Adresse</p:outputLabel>
+                                        <p:inputText id="adress"
+                                                     label="Adresse"
+                                                     value="#{customerView.customer.address}"
+                                                     required="true" />
+                                    </div>
+
+                                    <div class="flex flex-column gap-2  mb-2">
+                                        <p:outputLabel for="tel" styleClass="font-bold">Numero téléphonique</p:outputLabel>
+                                        <p:inputMask id="tel"
+                                                     label="Téléphone"
+                                                     mask="(999) 99-99-99-99"
+                                                     value="#{customerView.customer.tel}"
+                                                     required="true" />
+                                    </div>
+                                </div>
+                                </div>
+                            </p:outputPanel>
+                            <p:divider/>
+                            <f:facet name="footer">
+                                <p:commandButton value="Enregistrer"
+                                                 icon="pi pi-check"
+                                                 update="manage-customer-content, :form:messages, :form:dt-customer,:form"
+                                                 process="manage-customer-content @this"
+                                                 actionListener="#{customerView.saveCustomer()}"/>
+                                <p:commandButton value="Annuler"
+                                                 icon="pi pi-times"
+                                                 onclick="PF('manageCustomerDialog').hide()"
+                                                 class="ui-button-secondary"
+                                                 type="button" />
+                            </f:facet>
+                        </p:dialog>
+
+                        <p:confirmDialog widgetVar="deleteCustomerDialog"
+                                         showEffect="fade"
+                                         width="400"
+                                         message="Voulez-vous supprimer ce client ?"
+                                         header="Confirmer"
+                                         severity="warn">
+                            <p:commandButton value="Oui"
+                                             icon="pi pi-check"
+                                             actionListener="#{customerView.deleteCustomer()}"
+                                             process="@this"
+                                             update=":form"
+                                             oncomplete="PF('deleteCustomerDialog').hide()" />
+                            <p:commandButton value="Non"
+                                             type="button"
+                                             styleClass="ui-button-secondary"
+                                             icon="pi pi-times"
+                                             onclick="PF('deleteCustomerDialog').hide()" />
+                        </p:confirmDialog>
+
+                        <p:confirmDialog widgetVar="accountCustomerDialog"
+                                         showEffect="fade"
+                                         width="400"
+                                         message="Afficher ?"
+                                         header="Confirmer"
+                                         severity="warn">
+                            <p:commandButton value="Oui"
+                                             icon="pi pi-check"
+                                             actionListener="#{customerView.getCustomerAccount(customerView.customer)}"
+                                             process="@this"
+                                             update=":form"
+                                             oncomplete="PF('deleteCustomerDialog').hide()" />
+                            <p:commandButton value="Non"
+                                             type="button"
+                                             styleClass="ui-button-secondary"
+                                             icon="pi pi-times"
+                                             onclick="PF('deleteCustomerDialog').hide()" />
+                        </p:confirmDialog>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="../home.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{accountView.onPageLoad(debtRequestView.customer)}" />
+        </f:metadata>
+        <div class="layout-wrapper mt-5 py-1">
+            <div class="grid p-4">
+                <div class="card col-12">
+                    <h:form id="myForm">
+
+                        <p:growl id="growl" sticky="true" showDetail="true"/>
+                        <p:breadCrumb styleClass="mb-2">
+                            <p:menuitem value="Menu"
+                                        url="/dashboard.xhtml"/>
+                                    <p:menuitem value="CLIENTS"
+                                        url="/clients/client.xhtml"/>
+                            <p:menuitem value="#{customerView.customer.firstName.concat(' ').concat(customerView.customer.lastName).toUpperCase()}"
+                                        url="/clients/account.xhtml"/>
+                            <p:menuitem value="BANETTE D'INITIALISATION DE DEMANDE"
+                                        url="/dettes/dette.xhtml"/>
+                        </p:breadCrumb>
+
+                        <p:wizard flowListener="#{debtRequestView.onFlowProcess}"
+                                  widgetVar="wizardDebtRequest" nextLabel="suivant" backLabel="précédent">
+                            <p:tab id="#{debtRequestView.wizardSteps.get(0)}" title="Demande">
+                                <p:panel header="Address Details">
+                                    <p:messages showDetail="true"/>
+                                    <h:panelGrid id="manage-debtRequest-content" columns="2" columnClasses="label, value">
+                                        <h:outputText value="Nom: "/>
+                                        <p:inputText disabled="true"
+                                                     value="#{debtRequestView.customer.firstName}"/>
+
+                                        <h:outputText value="Prénom: "/>
+                                        <p:inputText disabled="true" value="#{debtRequestView.customer.lastName}"/>
+
+                                        <h:outputText value="Adresse mail: "/>
+                                        <p:inputText disabled="true" value="#{debtRequestView.customer.email}"/>
+
+                                        <h:outputText value="Adresse: "/>
+                                        <p:inputText disabled="true" value="#{debtRequestView.customer.address}"/>
+
+                                        <h:outputText value="Téléphone: "/>
+                                        <p:inputText disabled="true"
+                                                     value="#{debtRequestView.customer.tel}"/>
+
+
+                                        <h:outputText value="Montant demandé: "/>
+                                        <p:inputNumber required="true"
+                                                       value="#{debtRequestView.debtRequest.amountRequest}"/>
+                                    </h:panelGrid>
+                                </p:panel>
+                            </p:tab>
+
+                            <p:tab id="#{debtRequestView.wizardSteps.get(1)}" title="Approbation">
+                                <p:panel header="Ajouter votre approbation">
+                                    <p:messages showDetail="true"/>
+
+                                    <p:toolbar>
+                                        <p:toolbarGroup>
+                                            <p:commandButton value="Nouveau"
+                                                             icon="pi pi-plus"
+                                                             actionListener="#{workflowValidationView.newWorkflowValidation()}"
+                                                             update=":dialogs:manage-workflowValidation-content"
+                                                             oncomplete="PF('manageWorkflowValidationDialog').show()"
+                                                             styleClass="ui-button-success" style="margin-right: .5rem">
+                                                <p:resetInput target=":dialogs:manage-workflowValidation-content" />
+                                            </p:commandButton>
+                                        </p:toolbarGroup>
+                                    </p:toolbar>
+
+                                    <p:dataTable id="dt-workflowValidation" widgetVar="dtWorkflowValidation"
+                                                 var="workflowValidation"
+                                                 value="#{workflowValidationView.getWorkflowValidationByDebtRequest(debtRequestView.debtRequest)}"
+                                                 reflow="true"
+                                                 styleClass="products-table"
+                                                 selection="#{workflowValidationView.workflowValidations}"
+                                                 rowKey="#{workflowValidation.id}"
+                                                 paginator="true"
+                                                 rows="10"
+                                                 selectionRowMode="add"
+                                                 paginatorPosition="bottom">
+                                        <f:facet name="header">
+                                            <div class="products-table-header">
+                                                <span style="font-weight: bold">Approbation</span>
+                                                <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"/>
+                                                    <p:inputText id="globalFilter" onkeyup="PF('dtWorkflowValidation').filter()" placeholder="Search" />
+                                                </span>
+                                            </div>
+                                        </f:facet>
+
+                                        <p:ajax event="rowSelect" />
+                                        <p:ajax event="rowUnselect" />
+                                        <p:ajax event="rowSelectCheckbox" />
+                                        <p:ajax event="rowUnselectCheckbox" />
+                                        <p:ajax event="toggleSelect" />
+
+                                        <p:column selectionMode="multiple" exportable="false"/>
+
+                                        <p:column headerText="Décision" sortBy="#{workflowValidation.decision}" filterBy="#{workflowValidation.decision}">
+                                            <h:outputText value="#{workflowValidation.decision}"/>
+                                        </p:column>
+
+                                        <p:column headerText="Commentaire" sortBy="#{workflowValidation.comment}" filterBy="#{workflowValidation.comment}">
+                                            <h:outputText value="#{workflowValidation.comment}" />
+                                        </p:column>
+
+                                        <p:column headerText="Date" sortBy="#{workflowValidation.dateValidation}" filterBy="#{workflowValidation.dateValidation}">
+                                            <h:outputText value="#{workflowValidation.dateValidation}" />
+                                        </p:column>
+
+                                        <p:column headerText="Décision prise par"
+                                                  sortBy="#{workflowValidation.user.firstName.concat(' ').concat(workflowValidation.user.lastName)}"
+                                                  filterBy="#{workflowValidation.user.firstName.concat(' ').concat(workflowValidation.user.lastName)}">
+                                            <h:outputText value="#{workflowValidation.user.firstName.concat(' ').concat(workflowValidation.user.lastName)}" />
+                                        </p:column>
+
+                                        <p:column exportable="false" ariaHeaderText="Actions">
+                                            <p:commandButton icon="pi pi-pencil" update=":dialogs:manage-workflowValidation-content"
+                                                             oncomplete="PF('manageWorkflowValidationDialog').show()"
+                                                             styleClass="edit-button rounded-button ui-button-success" process="@this">
+                                                <f:setPropertyActionListener value="#{workflowValidation}" target="#{workflowValidationView.workflowValidation}" />
+                                                <p:resetInput target=":dialogs:manage-workflowValidation-content" />
+                                            </p:commandButton>
+                                            <p:commandButton class="ui-button-warning rounded-button" icon="pi pi-trash"
+                                                             process="@this"
+                                                             oncomplete="PF('deleteWorkflowValidationDialog').show()">
+                                                <f:setPropertyActionListener value="#{workflowValidation}" target="#{workflowValidationView.workflowValidation}" />
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+
+
+                                </p:panel>
+                            </p:tab>
+
+                            <p:tab id="#{debtRequestView.wizardSteps.get(2)}" title="Décision du commité">
+                                <p:panel header="Décision">
+                                    <p:messages showDetail="true"/>
+                                    <p:toolbar>
+                                        <p:toolbarGroup>
+                                            <p:commandButton value="Nouveau"
+                                                             icon="pi pi-plus"
+                                                             actionListener="#{committeeDecisionView.newCommitteeDecision()}"
+                                                             update=":dialogs:manage-committeeDecision-content"
+                                                             oncomplete="PF('manageCommitteeDecisionDialog').show()"
+                                                             styleClass="ui-button-success" style="margin-right: .5rem">
+                                                <p:resetInput target=":dialogs:manage-committeeDecision-content" />
+                                            </p:commandButton>
+                                        </p:toolbarGroup>
+
+                                    </p:toolbar>
+
+                                    <p:dataTable id="dt-committeeDecision" widgetVar="dtCommitteeDecision"
+                                                 var="committeeDecision"
+                                                 value="#{committeeDecisionView.getCommitteeDecisionByDebtRequest(debtRequestView.debtRequest)}"
+                                                 reflow="true"
+                                                 styleClass="products-table"
+                                                 selection="#{committeeDecisionView.committeeDecisions}"
+                                                 rowKey="#{committeeDecision.id}"
+                                                 paginator="true"
+                                                 rows="10"
+                                                 selectionRowMode="add"
+                                                 paginatorPosition="bottom">
+                                        <f:facet name="header">
+                                            <div class="products-table-header">
+                                                <span style="font-weight: bold">Approbation</span>
+                                                <span class="filter-container ui-input-icon-left"> <i class="pi pi-search"/>
+                                                    <p:inputText id="globalFilterCommitteeDecision"
+                                                                 onkeyup="PF('dtCommitteeDecision').filter()"
+                                                                 placeholder="Search" />
+                                                </span>
+                                            </div>
+                                        </f:facet>
+
+                                        <p:ajax event="rowSelect" />
+                                        <p:ajax event="rowUnselect" />
+                                        <p:ajax event="rowSelectCheckbox" />
+                                        <p:ajax event="rowUnselectCheckbox" />
+                                        <p:ajax event="toggleSelect" />
+
+                                        <p:column selectionMode="multiple" exportable="false"/>
+
+                                        <p:column headerText="Décision">
+                                            <h:outputText value="#{committeeDecision.decision}" />
+                                        </p:column>
+
+                                        <p:column headerText="Commentaire">
+                                            <h:outputText value="#{committeeDecision.comment}" />
+                                        </p:column>
+
+                                        <p:column headerText="Date" sortBy="#{committeeDecision.dateDecision}" filterBy="#{committeeDecision.dateDecision}">
+                                            <h:outputText value="#{committeeDecision.dateDecision}" />
+                                        </p:column>
+
+                                        <p:column headerText="Commité de décision"
+                                                  sortBy="#{committeeDecision.committeeValidation.description}"
+                                                  filterBy="#{committeeDecision.committeeValidation.description}">
+                                            <h:outputText value="#{committeeDecision.committeeValidation.description}" />
+                                        </p:column>
+
+                                        <p:column exportable="false" ariaHeaderText="Actions">
+                                            <p:commandButton icon="pi pi-pencil"
+                                                             update=":dialogs:manage-committeeDecision-content"
+                                                             oncomplete="PF('manageCommitteeDecisionDialog').show()"
+                                                             actionListener="#{committeeDecisionView.editCommitteeDecision(committeeDecision)}"
+                                                             styleClass="edit-button rounded-button ui-button-success"
+                                                             rocess="@this">
+                                                <f:setPropertyActionListener value="#{committeeDecision}"
+                                                                             target="#{committeeDecisionView.committeeDecision}" />
+                                                <p:resetInput target="manage-committeeDecision-content" />
+                                            </p:commandButton>
+                                            <p:commandButton class="ui-button-warning rounded-button"
+                                                             icon="pi pi-trash"
+                                                             process="@this"
+                                                             oncomplete="PF('deleteCommitteeDecisionDialog').show()">
+                                                <f:setPropertyActionListener value="#{committeeDecision}"
+                                                                             target="#{committeeDecisionView.committeeDecision}" />
+                                            </p:commandButton>
+                                        </p:column>
+                                    </p:dataTable>
+                                    <div>
+                                        <p:commandButton value="Valider"
+                                                         process="@this"
+                                                         actionListener="#{debtRequestView.submitDebtRequest(debtRequestView.debtRequest)}"
+                                                         icon="pi pi-check"/>
+                                    </div>
+                                </p:panel>
+                            </p:tab>
+                        </p:wizard>
+
+                    </h:form>
+
+                    <h:form id="dialogs">
+
+
+                        <p:dialog header="Enregistrer un commentaire"
+                                  width="500"
+                                  showEffect="fade"
+                                  modal="true" widgetVar="manageCommitteeDecisionDialog"
+                                  responsive="true">
+                            <p:outputPanel id="manage-committeeDecision-content" class="ui-fluid">
+                                    <div class="field">
+                                        <h:outputText value="Décision: *"/>
+                                        <p:inputTextarea value="#{committeeDecisionView.committeeDecision.decision}"
+                                                         required="true"
+                                                         label="Décision"/>
+                                    </div>
+                                    <div class="field">
+                                        <h:outputText value="Commentaire: "/>
+                                        <p:inputTextarea value="#{committeeDecisionView.committeeDecision.comment}"/>
+                                    </div>
+                            </p:outputPanel>
+
+                            <f:facet name="footer">
+                                <p:commandButton value="Enregistrer"
+                                                 icon="pi pi-check"
+                                                 actionListener="#{committeeDecisionView.saveCommitteeDecision(debtRequestView.debtRequest)}"
+                                                 update="manage-committeeDecision-content,:myForm:dt-committeeDecision,:myForm"
+                                                 process="manage-committeeDecision-content @this" />
+                                <p:commandButton value="Cancel" icon="pi pi-times"
+                                                 onclick="PF('manageCommitteeDecisionDialog').hide()"
+                                                 class="ui-button-secondary" type="button" />
+                            </f:facet>
+                        </p:dialog>
+
+                       <p:dialog header="Confirmer la demande"
+                                 width="500"
+                                 showEffect="fade"
+                                 modal="true" widgetVar="manageSubmitDebtRequestDialog"
+                                 responsive="true">
+                        <p:outputPanel id="manage-submitDebtRequestDialog-content" class="ui-fluid">
+                            <p:messages/>
+                            <div class="field">
+                                <h:outputText value="Décision: *"/>
+                                <p:inputTextarea value="#{debtView.debt.decision}"
+                                                 required="true"
+                                                 label="Décision"/>
+                            </div>
+                            <div class="field">
+                                <h:outputText value="Commentaire: "/>
+                                <p:inputTextarea
+                                        label="Commentaire"
+                                        value="#{debtView.debt.comment}"/>
+                            </div>
+                            <div class="field">
+                                <h:outputText value="Taux d'intêret: "/>
+                                <p:inputNumber required="true"
+                                               label="Taux d'intêret"
+                                               value="#{debtView.debt.interestRate}"/>
+                            </div>
+                        </p:outputPanel>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Enregistrer"
+                                             icon="pi pi-check"
+                                             actionListener="#{debtView.createDebt(debtRequestView.debtRequest)}"
+                                             process="manage-submitDebtRequestDialog-content @this" />
+                            <p:commandButton value="Cancel" icon="pi pi-times"
+                                             onclick="PF('manageSubmitDebtRequestDialog').hide()"
+                                             class="ui-button-secondary" type="button" />
+                        </f:facet>
+                    </p:dialog>
+
+                        <p:dialog header="Enregistrer un commentaire"
+                                  width="500"
+                                  showEffect="fade"
+                                  modal="true" widgetVar="manageWorkflowValidationDialog"
+                                  responsive="true">
+                            <p:outputPanel id="manage-workflowValidation-content" class="ui-fluid">
+                                    <div class="field">
+                                        <p:outputLabel for="decision">Décision</p:outputLabel>
+                                        <p:inputTextarea id="decision"
+                                                         value="#{workflowValidationView.workflowValidation.decision}"
+                                                         required="true" />
+                                    </div>
+                                    <div class="field">
+                                        <p:outputLabel for="comment">Commentaire</p:outputLabel>
+                                        <p:inputTextarea
+                                                id="comment"
+                                                value="#{workflowValidationView.workflowValidation.comment}" />
+                                    </div>
+                            </p:outputPanel>
+
+                            <f:facet name="footer">
+                                <p:commandButton value="Enregistrer"
+                                                 icon="pi pi-check"
+                                                 actionListener="#{workflowValidationView.saveWorkflowValidation(debtRequestView.debtRequest)}"
+                                                 update="manage-workflowValidation-content,:myForm:dt-dtworkflowValidation,:myForm"
+                                                 process="manage-workflowValidation-content @this" />
+                                <p:commandButton value="Cancel" icon="pi pi-times" onclick="PF('manageWorkflowValidationDialog').hide()"
+                                                 class="ui-button-secondary" type="button" />
+                            </f:facet>
+                        </p:dialog>
+
+                        <p:confirmDialog widgetVar="deleteWorkflowValidationDialog" showEffect="fade" width="300"
+                                         message="Voulez-vous supprimer cette décision ?" header="Confirm" severity="warn">
+                            <p:commandButton value="Yes" icon="pi pi-check"
+                                             process="@this"
+                                             oncomplete="PF('deleteProductDialog').hide()" />
+                            <p:commandButton value="No" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteWorkflowValidationDialog').hide()" />
+                        </p:confirmDialog>
+
+
+                        <p:confirmDialog widgetVar="deleteCommitteeDecisionDialog" showEffect="fade" width="300"
+                                         message="Voulez-vous supprimer cette décision de commitée ?" header="Confirm" severity="warn">
+                            <p:commandButton value="Oui" icon="pi pi-check"
+                                             process="@this"
+                                             oncomplete="PF('deleteCommitteeDecisionDialog').hide()" />
+                            <p:commandButton value="Non" type="button" styleClass="ui-button-secondary" icon="pi pi-times"
+                                             onclick="PF('deleteCommitteeDecisionDialog').hide()" />
+                        </p:confirmDialog>
+
+                        <p:confirmDialog global="true" showEffect="fade" width="300">
+                            <p:commandButton value="Oui" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                            <p:commandButton value="Non" type="button" styleClass="ui-confirmdialog-no ui-button-secondary"
+                                             icon="pi pi-times" />
+                        </p:confirmDialog>
+                    </h:form>
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

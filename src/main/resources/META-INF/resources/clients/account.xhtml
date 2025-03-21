@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="../home.xhtml">
+    <ui:define name="content">
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{accountView.onPageLoad(customerView.customer)}" />
+        </f:metadata>
+        <h:form id="form">
+            <div class="layout-wrapper mt-5 py-1">
+                <div class="grid p-4">
+                    <div class="col-12">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:breadCrumb styleClass="mb-2">
+                            <p:menuitem value="Menu"
+                                        url="/dashboard.xhtml"/>
+                            <p:menuitem value="CLIENTS"
+                                        url="/clients/client.xhtml"/>
+                            <p:menuitem value="#{customerView.customer.firstName.concat(' ').concat(customerView.customer.lastName).toUpperCase()}"
+                                        url="/clients/account.xhtml"/>
+                        </p:breadCrumb>
+
+                        <p:toolbar >
+                            <p:toolbarGroup>
+                                <p:commandButton type="button"
+                                                 value="Ajouter un compte"
+                                                 onclick="PF('manageAccountDialog').show()"
+                                                 actionListener="#{accountView.newAccount()}"
+                                                 icon="pi pi-file" styleClass="mr-2">
+                                    <p:resetInput target=":dialogs:manage-account-content"/>
+                                </p:commandButton>
+                                <p:commandButton value="Nouvelle demande"
+                                                 actionListener="#{debtRequestView.newDebtRequest(customerView.customer)}"
+                                                 icon="pi pi-folder-open" styleClass="ui-button-success" />
+                                <i class="pi pi-bars px-2"/>
+                            </p:toolbarGroup>
+                        </p:toolbar>
+
+                        <p:card styleClass="mt-2">
+                            <f:facet name="header">
+
+                            </f:facet>
+                            <f:facet name="title">
+                                Fiche client
+                            </f:facet>
+                            <f:facet name="subtitle">
+                                #{customerView.customer.firstName.concat(' ').concat(customerView.customer.lastName).toUpperCase()}
+                            </f:facet>
+                            <p:fieldset legend="Information" toggleable="true" toggleSpeed="500" styleClass="mb-2">
+                                <p:panelGrid columns="4"
+                                             columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4"
+                                             layout="grid"
+                                             styleClass="ui-panelgrid-blank ui-fluid"
+                                             style="border:0px none; background-color:transparent;">
+
+                                    <p:row styleClass="my-heading-row">
+                                        Informations sur le client
+                                    </p:row>
+
+                                    <p:outputLabel for="@next" value="Nom" styleClass="font-bold"/>
+                                    <p:outputLabel for="@next" value="#{customerView.customer.firstName}"/>
+
+                                    <p:outputLabel for="@next" value="Prénom" styleClass="font-bold"/>
+                                    <p:outputLabel for="@next" value="#{customerView.customer.lastName}"/>
+
+                                    <p:outputLabel for="@next" value="Email" styleClass="font-bold"/>
+                                    <p:outputLabel for="@next" value="#{customerView.customer.email}"/>
+
+                                    <p:outputLabel for="@next" value="Adresse" styleClass="font-bold"/>
+                                    <p:outputLabel for="@next" value="#{customerView.customer.address}"/>
+
+                                    <p:outputLabel for="@next" value="Numéro téléphone" styleClass="font-bold"/>
+                                    <p:outputLabel for="@next" value="#{customerView.customer.tel}"/>
+
+                                    <p:row>
+                                        <p:column styleClass="ui-grid-col-12">
+                                            <p>It should be noted that the use of @next is not possible for the
+                                                <u>Registration Number</u> outputLabel and the <u>for</u> attribute
+                                                should utilize an ID as shown in the example. The other outputLabel and inputText fields do not require this
+                                                as they are the natural next element whereas
+                                                <u>Registration Number</u> is encapsulated in a column.</p>
+                                        </p:column>
+                                    </p:row>
+                                </p:panelGrid>
+                            </p:fieldset>
+
+                            <p:tabView>
+                                <f:facet name="actions">
+                                    Global actions
+                                </f:facet>
+                                <p:tab>
+                                    <f:facet name="title">
+                                        <span>Comptes bancaires</span>
+                                        <p:badge value="#{accountView.getAccountByCustomer(customerView.customer).size()}"
+                                                 severity="#{accountView.getAccountByCustomer(customerView.customer).size() > 1 ? 'success' : 'danger'}"
+                                                 class="ml-1"/>
+                                    </f:facet>
+                                    <f:facet name="actions">
+                                        Comptes bancaires
+                                    </f:facet>
+                                    <p:dataTable id="dtAccount"
+                                                 var="account"
+                                                 value="#{accountView.getAccountByCustomer(customerView.customer)}">
+
+                                        <f:facet name="header">
+                                            <h:outputText value="Détails sur les informations bancaires"/>
+                                        </f:facet>
+                                        <p:column headerText="Identifiant">
+                                            <h:outputText value="#{account.id}" />
+                                        </p:column>
+
+                                        <p:column headerText="Numéro de compte">
+                                            <h:outputText value="#{account.name}" />
+                                        </p:column>
+
+                                        <p:column headerText="Type de compte">
+                                            <h:outputText value="#{account.accountType.name}" />
+                                        </p:column>
+
+                                        <p:column headerText="solde">
+                                            <h:outputText value="#{account.balance}" />
+                                        </p:column>
+
+                                        <p:columnGroup type="footer">
+                                            <p:row>
+                                                <p:column colspan="3" style="text-align:right" footerText="Totals:"/>
+                                                <p:column>
+                                                    <f:facet name="footer">
+                                                        <h:outputText value="#{accountView.getSumAccountByCustomer(customerView.customer)}">
+                                                            <f:convertNumber type="currency" currencySymbol="CFA"/>
+                                                        </h:outputText>
+                                                    </f:facet>
+                                                </p:column>
+                                            </p:row>
+                                        </p:columnGroup>
+
+                                        <f:facet name="footer">
+                                            <h:outputText value="Data between 2013-2014"/>
+                                        </f:facet>
+                                    </p:dataTable>
+                                </p:tab>
+                                <p:tab>
+                                    <f:facet name="Dettes">
+                                        Dettes
+                                    </f:facet>
+                                    <f:facet name="title">
+                                        <span>Dettes</span>
+                                        <p:badge value="3" severity="danger" class="ml-1"/>
+                                    </f:facet>
+                                    <p class="m-0">
+                                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab
+                                        illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut
+                                        odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
+                                    </p>
+                                </p:tab>
+                            </p:tabView>
+
+
+                        </p:card>
+                    </div>
+                </div>
+            </div>
+        </h:form>
+
+        <h:form id="dialogs">
+            <p:messages id="messagesDialogs" showDetail="true"/>
+            <p:dialog header="Enregistrer un compte"
+                      showEffect="fade"
+                      modal="true"
+                      width="600"
+                      responsive="true"
+                      widgetVar="manageAccountDialog">
+                <p:divider/>
+                <p:outputPanel id="manage-account-content">
+                    <div class="flex flex-column gap-2  mb-2">
+                        <p:outputLabel for="accountType"
+                                       styleClass="font-bold">Type de compte</p:outputLabel>
+                        <p:selectOneMenu id="accountType"
+                                         required="true"
+                                         value="#{accountView.account.accountType}">
+                            <f:selectItem itemLabel="Select One" itemValue=""/>
+                            <f:selectItems var="accountType"
+                                           value="#{accountTypeView.accountTypes}"
+                                           itemLabel="#{accountType.name}"
+                                           itemValue="#{accountType}"/>
+                        </p:selectOneMenu>
+                    </div>
+                </p:outputPanel>
+                <p:divider/>
+                <f:facet name="footer">
+                    <p:commandButton value="Enregistrer"
+                                     icon="pi pi-check"
+                                     update="manage-account-content, :form:messages, :form:dtAccount,:form"
+                                     process="manage-account-content @this"
+                                     actionListener="#{accountView.saveAccount(customerView.customer)}"/>
+                    <p:commandButton value="Annuler"
+                                     icon="pi pi-times"
+                                     onclick="PF('manageAccountDialog').hide()"
+                                     class="ui-button-secondary"
+                                     type="button" />
+                </f:facet>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>
+</html>

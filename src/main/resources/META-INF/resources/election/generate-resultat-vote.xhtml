@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="../home.xhtml">
+    <ui:define name="content">
+
+        <f:metadata>
+            <f:event type="preRenderView" listener="#{voteView.onLoadPageResultatElection()}" />
+        </f:metadata>
+
+        <div class="layout-wrapper mt-5 py-1">
+            <div class="grid p-4">
+                <div class="col-12">
+                    <h:form id="form">
+                        <p:growl id="messages" showDetail="true"/>
+                        <p:toolbar>
+                            <f:facet name="right">
+                                <p:commandButton value="Imprimer"
+                                                 icon="pi pi-fw pi-"
+                                                 oncomplete="PF('generateResultatDialog').show()"
+                                                 styleClass="ui-button-success">
+                                </p:commandButton>
+                            </f:facet>
+                        </p:toolbar>
+                        <p:dataTable id="dt-resultat"
+                                     widgetVar="dtResultat"
+                                     var="resultatDto"
+                                     value="#{voteView.getAllFinalResulat()}"
+                                     reflow="true"
+                                     stripedRows="true"
+                                     styleClass="products-table"
+                                     rowKey="#{resultatDto.id}"
+                                     paginator="true"
+                                     rows="10">
+                            <f:facet name="header">
+                                <div class="flex justify-content-between products-table-header">
+                                    <span style="font-weight: bold">Résultat</span>
+                                    <span class=" filter-container ui-input-icon-left">
+                                        <i class="pi pi-search"/>
+                                        <p:inputText id="globalFilter"
+                                                     onkeyup="PF('dtResultat').filter()"
+                                                     placeholder="Rechercher" />
+                                    </span>
+                                </div>
+                            </f:facet>
+
+                            <p:columnGroup type="header">
+                                <p:row>
+                                    <p:column rowspan="3" headerText="Candidat"/>
+                                    <p:column colspan="4" headerText="Statistiques"/>
+                                </p:row>
+                                <p:row>
+                                    <p:column colspan="2" headerText="Informations"/>
+                                    <p:column colspan="2" headerText="Données"/>
+                                </p:row>
+                                <p:row>
+                                    <p:column headerText="Mouvement politique"/>
+                                    <p:column headerText="Date d'operation"/>
+                                    <p:column headerText="Pourcentage"/>
+                                    <p:column headerText="Votants"/>
+                                </p:row>
+                            </p:columnGroup>
+
+
+
+                            <p:column headerText="Candidat" sortBy="#{resultatDto.candidatEntity.nom.concat(' ').concat(resultatDto.candidatEntity.prenom)}"
+                                      filterBy="#{resultatDto.candidatEntity.nom.concat(' ').concat(resultatDto.candidatEntity.prenom)}">
+                                <h:outputText value="#{resultatDto.candidatEntity.nom.concat(' ').concat(resultatDto.candidatEntity.prenom)}" />
+                            </p:column>
+
+                            <p:column headerText="Mouvement">
+                                <h:outputText value="#{resultatDto.candidatEntity.mouvementEntity.designation}" />
+                            </p:column>
+                            <p:column headerText="Date d'opération">
+                                <h:outputText value="#{resultatDto.localDateResultat}" />
+                            </p:column>
+                            <p:column headerText="Pourcentage">
+                                <h:outputText value="#{resultatDto.pourcentage}%" />
+                            </p:column>
+                            <p:column headerText="Votant">
+                                <h:outputText value="#{resultatDto.agentEntities.size()}" />
+                            </p:column>
+                            <p:columnGroup type="footer">
+                                <p:row>
+                                    <p:column colspan="3" style="text-align:right" footerText="Totaux:"/>
+                                    <p:column>
+                                        <f:facet name="footer">
+                                            <h:outputText value="100%"/>
+                                        </f:facet>
+                                    </p:column>
+                                    <p:column>
+                                        <f:facet name="footer">
+                                            <h:outputText value="#{voteView.countResultat()}"/>
+                                        </f:facet>
+                                    </p:column>
+                                </p:row>
+                            </p:columnGroup>
+                        </p:dataTable>
+                    </h:form>
+
+                </div>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>

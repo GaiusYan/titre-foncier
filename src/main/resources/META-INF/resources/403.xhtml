@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:faces="jakarta.faces"
+      xmlns:ui="jakarta.faces.facelets"
+      xmlns:f="jakarta.faces.core"
+      xmlns:h="jakarta.faces.html"
+      xmlns:pt="jakarta.faces.passthrough"
+      xmlns:cc="jakarta.faces.composite"
+      xmlns:c="jakarta.tags.core"
+      xmlns:p="primefaces"
+      xmlns:fn="jakarta.tags.functions">
+<h:head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <title>Region</title>
+</h:head>
+<ui:composition template="home.xhtml">
+    <ui:define name="content">
+        <div class="px-4 py-8 md:px-6 lg:px-8 lg:w-6 w-full flex flex-column justify-content-center">
+            <div style="background: radial-gradient(50% 109137.91% at 50% 50%, rgb(30 102 233 / 10%) 0%, #2196f300 100%);"
+                 class="text-center">
+                    <span class="bg-white text-blue-500 font-bold text-6xl inline-block px-3">
+                        403
+                    </span>
+            </div>
+            <div class="mt-6 mb-5 font-bold text-2xl text-900 text-center">
+                Vous n'etes pas autorisé à accèder à cette resource
+            </div>
+            <p class="text-700 text-xl mt-0 mb-6 text-center">
+                Veuillez contacter l'administrateur.
+            </p>
+        </div>
+    </ui:define>
+</ui:composition>
+</html>
+
+
