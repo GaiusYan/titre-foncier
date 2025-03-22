@@ -15,7 +15,7 @@
         <div class="px-4 py-8 md:px-6 lg:px-8">
             <div class="flex align-items-center justify-content-center">
                 <div class="flex flex-column bg-white p-8 rounded-lg shadow-2">
-                    <h2 class="text-2xl font-semibold text-center mb-6 text-gray-700">Créer un compte</h2>
+                    <h2 class="text-2xl font-semibold text-center mb-6 text-gray-700">Créer un compte demandeur</h2>
                     <h:form styleClass="w-full" id="form-create-account">
                         <p:growl id="messages" life="5000" showDetail="true" showSummary="true"/>
                         <p:outputPanel id="manage-account-content">
@@ -23,29 +23,21 @@
                                 <p:inputText placeholder="Nom"
                                              required="true"
                                              label="Nom"
-                                             value="#{createAccountView.user.firstName}"
+                                             value="#{registerView.user.name}"
                                              id="firstname"
                                              requiredMessage="Ce champ est obligatoire"
                                              styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </p:inputText>
                             </div>
 
-                            <div class="mb-2">
-                                <p:inputText placeholder="Prénom"
-                                             required="false"
-                                             label="Prénom"
-                                             id="lastname"
-                                             value="#{createAccountView.user.lastName}"
-                                             styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                </p:inputText>
-                            </div>
+
 
                             <div class="flex flex-row gap-2 mb-2">
                                 <p:inputText placeholder="Email"
                                              required="true"
                                              label="Email"
                                              id="email"
-                                             value="#{createAccountView.user.email}"
+                                             value="#{registerView.user.email}"
                                              requiredMessage="Ce champ est obligatoire"
                                              styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </p:inputText>
@@ -55,7 +47,7 @@
                                              id="username"
                                              required="true"
                                              label="Nom d'utilisateur"
-                                             value="#{createAccountView.user.username}"
+                                             value="#{registerView.user.username}"
                                              requiredMessage="Ce champ est obligatoire"
                                              styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </p:inputText>
@@ -66,7 +58,7 @@
                                         id="password"
                                         placeholder="Mot de passe"
                                         label="Mot de passe"
-                                        value="#{createAccountView.user.password}"
+                                        value="#{registerView.user.password}"
                                         requiredMessage="Ce champ est obligatoire"
                                         styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </p:password>
@@ -78,7 +70,7 @@
                                         placeholder="Confirmer le mot de passe"
                                         label="Confirmation de mot de passe"
                                         requiredMessage="Ce champ est obligatoire"
-                                        value="#{createAccountView.confirmPassword}"
+                                        value="#{registerView.confirmPassword}"
                                         styleClass="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                 </p:password>
                             </div>
@@ -86,7 +78,7 @@
                         <div class="flex items-center justify-between gap-2">
                             <p:commandButton value="Créer un compte"
                                              update="manage-account-content,messages"
-                                             action="#{createAccountView.createUserAccount()}"
+                                             action="#{registerView.register()}"
                                              styleClass="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 focus:outline-none">
                             </p:commandButton>
                             <a href="${pageContext.request.contextPath}/login.xhtml"

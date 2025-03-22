@@ -23,12 +23,11 @@ public class UserCredentialSecurity implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<GrantedAuthority> grantedAuthorities = new ArrayList<>();
-        com.bfst.allocation.user.User user = userRepository.findByUsername(username).orElse(null);
+        com.bfst.titrefoncier.user.User user = userRepository.findByUsername(username).orElse(null);
         if(user != null && user.getRole() != null &&
                 user.isEnabled()){
             grantedAuthorities.add(
                     new SimpleGrantedAuthority("ROL_"+ user.getRole()));
-
             return new User(
                     user.getUsername(),
                     user.getPassword(),

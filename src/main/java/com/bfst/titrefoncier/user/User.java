@@ -31,6 +31,6 @@ public class User {
     private String password;
     private LocalDate dateCreated;
     private LocalDate dateModified;
-    private boolean enabled;
+    private boolean isEnabled;
     private Role role;
 }
