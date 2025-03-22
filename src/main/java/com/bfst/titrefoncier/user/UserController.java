@@ -24,7 +24,6 @@ public class UserController {
     }
 
     public void createUserAccount(){
-
     }
 
     public void createOrUpdateUserAccount(User user){

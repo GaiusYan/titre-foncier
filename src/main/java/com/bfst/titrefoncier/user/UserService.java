@@ -64,4 +64,8 @@ public class UserService {
              return userRepository.save(userToUpdate);
         } else return null;
     }
+
+    public List<User> getUserByOrderByDateCreatedDesc() {
+        return this.userRepository.findByOrderByDateCreatedDesc();
+    }
 }
